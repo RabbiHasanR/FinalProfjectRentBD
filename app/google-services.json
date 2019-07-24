@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "466152576069",
+    "firebase_url": "https://rent-bd.firebaseio.com",
+    "project_id": "rent-bd",
+    "storage_bucket": "rent-bd.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:466152576069:android:0665fa196efc0f6f",
+        "android_client_info": {
+          "package_name": "com.example.rentbd"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "466152576069-h6gflgmnbcdn5g5tnbm6nmuibg2uoagp.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.rentbd",
+            "certificate_hash": "38c5d435041fc4fbce251a21124400f78d73bf3c"
+          }
+        },
+        {
+          "client_id": "466152576069-m5o39m0fr7a51vvng81ov7uis2fk3q9f.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAvywt9e8kC1Ye9RvOIBbxBUp5M0qdeI6M"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "466152576069-m5o39m0fr7a51vvng81ov7uis2fk3q9f.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
