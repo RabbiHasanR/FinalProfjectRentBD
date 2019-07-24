@@ -16,4 +16,13 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string-array name="tolet_type">
+        <item>Flat</item>
+        <item>Mess</item>
+        <item>Sublet</item>
+        <item>Hostel</item>
+        <item>Office</item>
+        <item>Garage</item>
+    </string-array>
 </resources>
