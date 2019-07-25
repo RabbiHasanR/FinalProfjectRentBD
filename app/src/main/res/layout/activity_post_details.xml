@@ -5,19 +5,26 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".Activity.PostDetailsActivity">
-
-    <LinearLayout
+    <include layout="@layout/toolbar" />
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
-        <androidx.viewpager.widget.ViewPager
-            android:id="@+id/viewPager"
-            android:layout_width="match_parent"
-            android:layout_height="350dp"/>
-        <ScrollView
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:padding="20dp"
+        android:scrollbars="none"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_gravity="">
+            android:orientation="vertical"
+            android:padding="5dp">
+            <androidx.viewpager.widget.ViewPager
+                android:id="@+id/viewPager"
+                android:layout_width="match_parent"
+                android:layout_height="350dp"
+                android:layout_marginTop="5dp"
+                android:padding="5dp"
+                />
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -33,17 +40,21 @@
                         android:layout_height="wrap_content"
                         android:text="Title:"
                         android:textColor="#000"
-                        android:textSize="32sp"
+                        android:textSize="16sp"
                         android:layout_marginRight="2dp"
                         android:layout_marginLeft="4dp"
-                        android:padding="4dp"/>
+                        android:padding="8dp"
+                        android:textStyle="bold"
+                        />
                     <TextView
                         android:id="@+id/title_txt"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Tolet for Sublet"
                         android:textColor="#000"
-                        android:textSize="24sp"/>
+                        android:textStyle="bold"
+                        android:padding="8dp"
+                        />
                 </LinearLayout>
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -56,17 +67,19 @@
                         android:layout_height="wrap_content"
                         android:text="Rent:"
                         android:textColor="#000"
-                        android:textSize="24sp"
+                        android:textSize="16sp"
                         android:layout_marginRight="2dp"
                         android:layout_marginLeft="4dp"
-                        android:padding="4dp"/>
+                        android:padding="8dp"
+                        android:textStyle="bold"/>
                     <TextView
                         android:id="@+id/rent"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="1500.00 Tk"
                         android:textColor="#000"
-                        android:textSize="16sp"/>
+                        android:textStyle="bold"
+                        android:padding="8dp"/>
                 </LinearLayout>
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -78,17 +91,19 @@
                         android:layout_height="wrap_content"
                         android:text="Available:"
                         android:textColor="#000"
-                        android:textSize="24sp"
+                        android:textSize="16sp"
                         android:layout_marginRight="2dp"
                         android:layout_marginLeft="4dp"
-                        android:padding="4dp"/>
+                        android:padding="8dp"
+                        android:textStyle="bold"/>
                     <TextView
                         android:id="@+id/availableDate"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="21-july-2019"
                         android:textColor="#000"
-                        android:textSize="16sp"/>
+                        android:textStyle="bold"
+                        android:padding="8dp"/>
                 </LinearLayout>
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -100,17 +115,19 @@
                         android:layout_height="wrap_content"
                         android:text="Address:"
                         android:textColor="#000"
-                        android:textSize="24sp"
+                        android:textSize="16sp"
                         android:layout_marginRight="2dp"
                         android:layout_marginLeft="4dp"
-                        android:padding="4dp"/>
+                        android:padding="8dp"
+                        android:textStyle="bold"/>
                     <TextView
                         android:id="@+id/address"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Sukrabad,Dhanmondi32,Dhaka"
                         android:textColor="#000"
-                        android:textSize="16sp"/>
+                        android:textStyle="bold"
+                        android:padding="8dp"/>
                 </LinearLayout>
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -122,17 +139,19 @@
                         android:layout_height="wrap_content"
                         android:text="Phone:"
                         android:textColor="#000"
-                        android:textSize="24sp"
+                        android:textSize="16sp"
                         android:layout_marginRight="2dp"
                         android:layout_marginLeft="4dp"
-                        android:padding="4dp"/>
+                        android:padding="8dp"
+                        android:textStyle="bold"/>
                     <TextView
                         android:id="@+id/phone"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="01681194424"
                         android:textColor="#000"
-                        android:textSize="16sp"/>
+                        android:textStyle="bold"
+                        android:padding="8dp"/>
                 </LinearLayout>
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -144,23 +163,24 @@
                         android:layout_height="wrap_content"
                         android:text="Description:"
                         android:textColor="#000"
-                        android:textSize="24sp"
+                        android:textSize="16sp"
                         android:layout_marginRight="2dp"
                         android:layout_marginLeft="4dp"
-                        android:padding="4dp"/>
+                        android:padding="8dp"
+                        android:textStyle="bold"/>
                     <TextView
                         android:id="@+id/description"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="111111111111111111111111111111111111111111111111111"
                         android:textColor="#000"
-                        android:textSize="16sp"/>
+                        android:textStyle="bold"
+                        android:padding="8dp"/>
                 </LinearLayout>
             </LinearLayout>
-        </ScrollView>
+        </LinearLayout>
 
-    </LinearLayout>
-
+    </ScrollView>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab"

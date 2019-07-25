@@ -54,6 +54,7 @@ public class ImageSliderAdapter extends PagerAdapter {
             Uri uri=Uri.parse(photo.getUri());
             Glide.with(context)
                     .load(uri)
+                    .fitCenter()
                     .into(ivPhoto);
         }
         container.addView(itemView);

@@ -1,74 +1,78 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     tools:context=".Activity.ProfileActivity">
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="250dp">
-        <LinearLayout
-            android:background="@drawable/gradientbackground"
-            android:layout_width="match_parent"
-            android:layout_height="250dp"
-            android:orientation="vertical">
-            <RelativeLayout
-                android:layout_width="170dp"
-                android:layout_height="170dp"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="25dp">
-                <ImageView
-                    android:id="@+id/profile_image"
-                    android:layout_width="170dp"
-                    android:layout_height="170dp"
-                    android:contentDescription="Profile Picture" />
-                <ImageView
-                    android:id="@+id/take_photo"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:background="@drawable/stroke_icon_img"
-                    android:backgroundTint="#eeeeee"
-                    android:padding="3dp"
-                    android:layout_marginBottom="10dp"
-                    android:layout_marginRight="5dp"
-                    android:layout_alignBottom="@id/profile_image"
-                    android:layout_alignRight="@id/profile_image"
-                    android:src="@drawable/ic_photo_camera_black_24dp"
-                    android:contentDescription="Capture Photo" />
-
-            </RelativeLayout>
-
-
-            <!-- <TextView
-                 android:layout_marginTop="10dp"
-                 android:layout_gravity="center_horizontal"
-                 android:layout_width="wrap_content"
-                 android:layout_height="wrap_content"
-                 android:text="Wiliam Snoe"
-                 android:textColor="#fff"
-                 android:textStyle="bold"
-                 android:textSize="21sp"/>-->
-        </LinearLayout>
-        <com.google.android.material.tabs.TabLayout
-            android:id="@+id/tabs"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="0dp"
-            android:minHeight="?attr/actionBarSize"
-            app:tabMode="fixed"
-            app:tabGravity="fill"
-            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-            android:fillViewport="false"
-            android:layout_alignParentBottom="true"/>
-    </RelativeLayout>
-    <!-- Adding ViewPager-->
-    <androidx.viewpager.widget.ViewPager
-        android:id="@+id/viewpager"
+    <include layout="@layout/toolbar" />
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+        android:orientation="vertical"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="250dp">
+            <LinearLayout
+                android:background="@drawable/gradientbackground"
+                android:layout_width="match_parent"
+                android:layout_height="250dp"
+                android:orientation="vertical">
+                <RelativeLayout
+                    android:layout_width="170dp"
+                    android:layout_height="170dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="25dp">
+                    <ImageView
+                        android:id="@+id/profile_image"
+                        android:layout_width="170dp"
+                        android:layout_height="170dp"
+                        android:contentDescription="Profile Picture" />
+                    <ImageView
+                        android:id="@+id/take_photo"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:background="@drawable/stroke_icon_img"
+                        android:backgroundTint="#eeeeee"
+                        android:padding="3dp"
+                        android:layout_marginBottom="10dp"
+                        android:layout_marginRight="5dp"
+                        android:layout_alignBottom="@id/profile_image"
+                        android:layout_alignRight="@id/profile_image"
+                        android:src="@drawable/ic_photo_camera_black_24dp"
+                        android:contentDescription="Capture Photo" />
 
-</LinearLayout>
+                </RelativeLayout>
+
+
+                <!-- <TextView
+                     android:layout_marginTop="10dp"
+                     android:layout_gravity="center_horizontal"
+                     android:layout_width="wrap_content"
+                     android:layout_height="wrap_content"
+                     android:text="Wiliam Snoe"
+                     android:textColor="#fff"
+                     android:textStyle="bold"
+                     android:textSize="21sp"/>-->
+            </LinearLayout>
+            <com.google.android.material.tabs.TabLayout
+                android:id="@+id/tabs"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="0dp"
+                android:minHeight="?attr/actionBarSize"
+                app:tabMode="fixed"
+                app:tabGravity="fill"
+                android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+                android:fillViewport="false"
+                android:layout_alignParentBottom="true"/>
+        </RelativeLayout>
+        <!-- Adding ViewPager-->
+        <androidx.viewpager.widget.ViewPager
+            android:id="@+id/viewpager"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+    </LinearLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

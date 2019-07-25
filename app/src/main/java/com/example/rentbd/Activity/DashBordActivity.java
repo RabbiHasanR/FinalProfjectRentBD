@@ -195,6 +195,19 @@ public class DashBordActivity extends AppCompatActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            Toast.makeText(this, "Under Construction", Toast.LENGTH_SHORT).show();
+            return true;
+        }
+        else if(id==R.id.action_logout){
+            if(mAuth.getCurrentUser()!=null){
+                mAuth.signOut();
+                moveLoginActivity();
+            }
+            return true;
+
+        }
+        else if(id==R.id.action_about){
+            Toast.makeText(this, "Under Construction", Toast.LENGTH_SHORT).show();
             return true;
         }
 
@@ -219,6 +232,12 @@ public class DashBordActivity extends AppCompatActivity
 
         } else if (id == R.id.nav_report_problem) {
 
+        }
+        else if (id==R.id.nav_logout){
+            if(mAuth.getCurrentUser()!=null){
+                mAuth.signOut();
+                moveLoginActivity();
+            }
         }
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
@@ -291,6 +310,10 @@ public class DashBordActivity extends AppCompatActivity
     @OnClick(R.id.fab)
     void onClickFab(){
         movePostActivity();
+    }
+    private void moveLoginActivity(){
+        Intent intent=new Intent(this,LoginActivity.class);
+        startActivity(intent);
     }
 
 
