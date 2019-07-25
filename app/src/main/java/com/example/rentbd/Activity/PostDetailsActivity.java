@@ -7,6 +7,8 @@ import androidx.viewpager.widget.ViewPager;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -14,6 +16,7 @@ import com.example.rentbd.Adapter.ImageSliderAdapter;
 import com.example.rentbd.Model.Photo;
 import com.example.rentbd.Model.Post;
 import com.example.rentbd.R;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -31,6 +34,7 @@ public class PostDetailsActivity extends AppCompatActivity {
     private String key=null;
     private FirebaseDatabase database;
     private DatabaseReference mDatabaseReference;
+    private FirebaseAuth mAuth;
     private Post post;
 
     @BindView(R.id.rent)
@@ -54,6 +58,7 @@ public class PostDetailsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_post_details);
         Toolbar toolbar=(Toolbar)findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        mAuth=FirebaseAuth.getInstance();
         database = FirebaseDatabase.getInstance();
         //get firebase database instance and reference
         post=new Post();
@@ -65,6 +70,46 @@ public class PostDetailsActivity extends AppCompatActivity {
         }
         retrivePostPhoto();
         retrivePostData();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_settings) {
+            Toast.makeText(this, "Under Construction", Toast.LENGTH_SHORT).show();
+            return true;
+        }
+        else if(id==R.id.action_logout){
+            if(mAuth.getCurrentUser()!=null){
+                mAuth.signOut();
+                moveLoginActivity();
+            }
+            return true;
+
+        }
+        else if(id==R.id.action_about){
+            Toast.makeText(this, "Under Construction", Toast.LENGTH_SHORT).show();
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void moveLoginActivity(){
+        Intent intent=new Intent(this,LoginActivity.class);
+        startActivity(intent);
     }
 
     /**

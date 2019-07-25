@@ -1,5 +1,12 @@
 <resources>
     <string name="app_name">Rent BD</string>
+    <string name="post_activity">Post</string>
+    <string name="post_details_activity">Post Details</string>
+    <string name="profile_activity">Profile</string>
+    <string name="to_let_activity">ToLet</string>
+    <string name="dashbord_activity">DashBord</string>
+    <string name="sign_up_activity">Sign Up</string>
+    <string name="reset_password_activity">Reset Password</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="nav_header_title">Android Studio</string>

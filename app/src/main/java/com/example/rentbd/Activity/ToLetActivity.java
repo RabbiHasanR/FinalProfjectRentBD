@@ -11,6 +11,8 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -42,6 +44,7 @@ public class ToLetActivity extends AppCompatActivity {
 
     private FirebaseDatabase database;
     private DatabaseReference myRef;
+    private FirebaseAuth mAuth;
     private List<Post> posts = new ArrayList<>();
     private String type;
 //    private DatabaseReference myRef2;
@@ -59,6 +62,7 @@ public class ToLetActivity extends AppCompatActivity {
         setContentView(R.layout.activity_to_let);
         Toolbar toolbar=(Toolbar)findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        mAuth=FirebaseAuth.getInstance();
         database = FirebaseDatabase.getInstance();
         myRef = database.getReference("Posts");
         ButterKnife.bind(this);
@@ -67,6 +71,46 @@ public class ToLetActivity extends AppCompatActivity {
             type=intent.getExtras().getString("type");
             setPostOnRecyclerview();
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_settings) {
+            Toast.makeText(this, "Under Construction", Toast.LENGTH_SHORT).show();
+            return true;
+        }
+        else if(id==R.id.action_logout){
+            if(mAuth.getCurrentUser()!=null){
+                mAuth.signOut();
+                moveLoginActivity();
+            }
+            return true;
+
+        }
+        else if(id==R.id.action_about){
+            Toast.makeText(this, "Under Construction", Toast.LENGTH_SHORT).show();
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void moveLoginActivity(){
+        Intent intent=new Intent(this,LoginActivity.class);
+        startActivity(intent);
     }
 
     /**
@@ -85,7 +129,6 @@ public class ToLetActivity extends AppCompatActivity {
                      */
                     if(post.getType().equalsIgnoreCase(type)){
                         posts.add(post);
-                        retrivePhotos(post.getKey());
                     }
                 }
                 Log.d("Posts:",String.valueOf(posts.isEmpty()));
@@ -101,6 +144,7 @@ public class ToLetActivity extends AppCompatActivity {
                     recyclerView.setLayoutManager(layoutmanager);
                     recyclerView.setItemAnimator( new DefaultItemAnimator());
                     recyclerView.setAdapter(recycler);
+                    recycler.notifyDataSetChanged();
                 }
             }
 
@@ -110,50 +154,6 @@ public class ToLetActivity extends AppCompatActivity {
             }
         });
     }
-
-    /**
-     * retrive photos download url from firebase database
-     * @param userId
-     */
-    private void retrivePhotos(String userId){
-        List<Photo> photos=new ArrayList<>();
-        DatabaseReference myRef2= database.getReference().child("Photos");
-        myRef2.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for(DataSnapshot dataSnapshot2:dataSnapshot.child(userId).getChildren()){
-                    Photo photo=dataSnapshot2.getValue(Photo.class);
-                    photos.add(photo);
-                }
-                if(!photos.isEmpty()){
-                    sliderView=findViewById(R.id.imageSlider);
-                    final SliderAdapter adapter = new SliderAdapter(photos);
-                    Log.d("Size:", String.valueOf(photos.size()));
-                    sliderView.setSliderAdapter(adapter);
-                    sliderView.setIndicatorAnimation(IndicatorAnimations.SLIDE); //set indicator animation by using SliderLayout.IndicatorAnimations. :WORM or THIN_WORM or COLOR or DROP or FILL or NONE or SCALE or SCALE_DOWN or SLIDE and SWAP!!
-                    sliderView.setSliderTransformAnimation(SliderAnimations.CUBEINROTATIONTRANSFORMATION);
-                    sliderView.setAutoCycleDirection(SliderView.AUTO_CYCLE_DIRECTION_BACK_AND_FORTH);
-                    sliderView.setIndicatorSelectedColor(Color.WHITE);
-                    sliderView.setIndicatorUnselectedColor(Color.GRAY);
-                    sliderView.startAutoCycle();
-
-                    sliderView.setOnIndicatorClickListener(new DrawController.ClickListener() {
-                        @Override
-                        public void onIndicatorClicked(int position) {
-                            sliderView.setCurrentPagePosition(position);
-                            Toast.makeText(ToLetActivity.this, String.valueOf(position), Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-    }
-
     /**
      * move to post activity
      */
@@ -166,4 +166,5 @@ public class ToLetActivity extends AppCompatActivity {
     void onClickFab(){
         movePostActivity();
     }
+
 }

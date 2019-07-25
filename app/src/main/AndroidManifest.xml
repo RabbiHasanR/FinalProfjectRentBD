@@ -9,12 +9,18 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".Activity.PostDetailsActivity" />
-        <activity android:name=".Activity.PostActivity" />
-        <activity android:name=".Activity.ToLetActivity" />
-        <activity android:name=".Activity.ResetPasswordActivity" />
-        <activity android:name=".Activity.ProfileActivity" />
-        <activity android:name=".Activity.SignUpActivity" />
+        <activity android:name=".Activity.PostDetailsActivity"
+            android:label="@string/post_details_activity"/>
+        <activity android:name=".Activity.PostActivity"
+            android:label="@string/post_activity"/>
+        <activity android:name=".Activity.ToLetActivity"
+            android:label="@string/to_let_activity"/>
+        <activity android:name=".Activity.ResetPasswordActivity"
+            android:label="@string/reset_password_activity"/>
+        <activity android:name=".Activity.ProfileActivity"
+            android:label="@string/profile_activity"/>
+        <activity android:name=".Activity.SignUpActivity"
+            android:label="@string/sign_up_activity"/>
         <activity
             android:name=".Activity.LoginActivity">
             <intent-filter>
@@ -25,6 +31,7 @@
         </activity>
         <activity
             android:name=".Activity.DashBordActivity"
+            android:label="@string/dashbord_activity"
             android:theme="@style/AppTheme.NoActionBar" />
     </application>
 

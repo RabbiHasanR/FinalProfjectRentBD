@@ -2,17 +2,33 @@ package com.example.rentbd.Adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.rentbd.Activity.PostDetailsActivity;
+import com.example.rentbd.Activity.ToLetActivity;
+import com.example.rentbd.Model.Photo;
 import com.example.rentbd.Model.Post;
 import com.example.rentbd.R;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.smarteist.autoimageslider.IndicatorAnimations;
+import com.smarteist.autoimageslider.IndicatorView.draw.controller.DrawController;
+import com.smarteist.autoimageslider.SliderAnimations;
+import com.smarteist.autoimageslider.SliderView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -39,6 +55,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyHolder>{
 
     public void onBindViewHolder(MyHolder holder, int position) {
         Post post = posts.get(position);
+        retrivePhotos(post.getKey(),holder.itemView);
         holder.titleTxt.setText(post.getTitle());
         holder.addressTxt.setText(post.getAddress());
         holder.phoneTxt.setText(post.getMobileNumber());
@@ -53,6 +70,53 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyHolder>{
             }
         });
     }
+
+    /**
+     * retrive photos download url from firebase database
+     * @param key
+     */
+    private void retrivePhotos(String key,View view){
+        List<Photo> photos=new ArrayList<>();
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myRef2= database.getReference().child("PostPhotos");
+        myRef2.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for(DataSnapshot dataSnapshot2:dataSnapshot.child(key).getChildren()){
+                    Photo photo=dataSnapshot2.getValue(Photo.class);
+                    photos.add(photo);
+                }
+                if(!photos.isEmpty()){
+                    final SliderView sliderView=view.findViewById(R.id.imageSlider);
+                    final SliderAdapter adapter = new SliderAdapter(photos);
+                    Log.d("Size:", String.valueOf(photos.size()));
+                    sliderView.setSliderAdapter(adapter);
+                    adapter.notifyDataSetChanged();
+                    sliderView.setIndicatorAnimation(IndicatorAnimations.SLIDE); //set indicator animation by using SliderLayout.IndicatorAnimations. :WORM or THIN_WORM or COLOR or DROP or FILL or NONE or SCALE or SCALE_DOWN or SLIDE and SWAP!!
+                    sliderView.setSliderTransformAnimation(SliderAnimations.CUBEINROTATIONTRANSFORMATION);
+                    sliderView.setAutoCycleDirection(SliderView.AUTO_CYCLE_DIRECTION_BACK_AND_FORTH);
+                    sliderView.setIndicatorSelectedColor(Color.WHITE);
+                    sliderView.setIndicatorUnselectedColor(Color.GRAY);
+                    sliderView.startAutoCycle();
+
+
+                    sliderView.setOnIndicatorClickListener(new DrawController.ClickListener() {
+                        @Override
+                        public void onIndicatorClicked(int position) {
+                            sliderView.setCurrentPagePosition(position);
+                            Toast.makeText(context, String.valueOf(position), Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
 
     @Override
     public int getItemCount() {

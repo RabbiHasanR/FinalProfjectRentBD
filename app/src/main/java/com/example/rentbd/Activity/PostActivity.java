@@ -227,6 +227,7 @@ public class PostActivity extends AppCompatActivity implements AdapterView.OnIte
         recyclerView.setLayoutManager(layoutmanager);
         recyclerView.setItemAnimator( new DefaultItemAnimator());
         recyclerView.setAdapter(recycler);
+        recycler.notifyDataSetChanged();
 
     }
 

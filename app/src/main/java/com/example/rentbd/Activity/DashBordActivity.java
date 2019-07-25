@@ -223,6 +223,7 @@ public class DashBordActivity extends AppCompatActivity
         if (id == R.id.nav_profile) {
             moveProfileActivity();
         } else if (id == R.id.nav_new_post) {
+            movePostActivity();
 
         } else if (id == R.id.nav_settings) {
 
