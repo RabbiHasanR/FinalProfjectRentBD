@@ -39,6 +39,7 @@ import java.io.InputStream;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 public class ProfileActivity extends AppCompatActivity {
 
@@ -326,5 +327,18 @@ public class ProfileActivity extends AppCompatActivity {
                 .load(imageByte)
                 .apply(RequestOptions.circleCropTransform())
                 .into(profile_image_iv);
+    }
+
+    @OnClick(R.id.fab)
+    void onClickFab(){
+        movePostActivity();
+    }
+
+    /**
+     * move to post activity
+     */
+    private void movePostActivity(){
+        Intent intent=new Intent(this,PostActivity.class);
+        startActivity(intent);
     }
 }

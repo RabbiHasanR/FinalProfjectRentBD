@@ -16,4 +16,9 @@
         android:orderInCategory="100"
         android:title="About"
         app:showAsAction="never" />
+    <item
+        android:id="@+id/action_nearby"
+        android:orderInCategory="100"
+        android:title="Near By"
+        app:showAsAction="always" />
 </menu>

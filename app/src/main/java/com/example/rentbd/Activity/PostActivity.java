@@ -2,23 +2,32 @@ package com.example.rentbd.Activity;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.DialogFragment;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.Manifest;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.ClipData;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.location.Address;
+import android.location.Geocoder;
+import android.location.Location;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -34,10 +43,26 @@ import com.example.rentbd.Adapter.PhotoAdapter;
 import com.example.rentbd.Model.Photo;
 import com.example.rentbd.Model.Post;
 import com.example.rentbd.R;
+import com.firebase.geofire.GeoFire;
+import com.firebase.geofire.GeoLocation;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.MapsInitializer;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
@@ -49,12 +74,18 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class PostActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener{
+public class PostActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener,
+        GoogleMap.OnCameraMoveListener,
+        GoogleMap.OnCameraMoveCanceledListener,
+        GoogleMap.OnCameraIdleListener,
+        GoogleMap.OnMarkerClickListener{
+    private static final String TAG = "PostActivity";
     private List<Uri> imagesUriArrayList=new ArrayList<>();
     private final int PICK_IMAGE_MULTIPLE =1;
     private StorageReference mStorageRef;
@@ -78,11 +109,23 @@ public class PostActivity extends AppCompatActivity implements AdapterView.OnIte
     Button addBtn;
     @BindView(R.id.my_recycler_view)
     RecyclerView recyclerView;
+    @BindView(R.id.input_latlang)
+    EditText latlangEditTxt;
+    private MapView mMapView;
+
+    private Marker mMarker;
+    private GoogleMap mMap;
+
+    //current location
+    private FusedLocationProviderClient mFusedLocationClient;
+    private double latitude;
+    private double longitude;
 
 
     private FirebaseDatabase database;
     private DatabaseReference mDatabaseReference;
     private DatabaseReference mDatabaseReference1;
+    private DatabaseReference mDatabaseReference4;
     private Post post;
     private String type;
     private ProgressDialog progressDialog;
@@ -92,14 +135,16 @@ public class PostActivity extends AppCompatActivity implements AdapterView.OnIte
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_post);
-        Toolbar toolbar=(Toolbar)findViewById(R.id.toolbar);
+        Toolbar toolbar= findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         database = FirebaseDatabase.getInstance();
         //get firebase database instance and reference
         mDatabaseReference= database.getReference().child("Posts");
+        mDatabaseReference4= database.getReference().child("PostLocations");
         mStorageRef= FirebaseStorage.getInstance().getReference().child("PostPhotos");
         post=new Post();
         ButterKnife.bind(this);
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         // Create an ArrayAdapter using the string array and a default spinner layout
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
                 R.array.tolet_type, android.R.layout.simple_spinner_item);
@@ -108,6 +153,7 @@ public class PostActivity extends AppCompatActivity implements AdapterView.OnIte
         // Apply the adapter to the spinner
         spinner.setAdapter(adapter);
         spinner.setOnItemSelectedListener(this);
+        getLastKnownLocation();
     }
     private void moveLoginActivity(){
         Intent intent=new Intent(this,LoginActivity.class);
@@ -270,6 +316,10 @@ public class PostActivity extends AppCompatActivity implements AdapterView.OnIte
      * Store post in firebase database
      */
     private void storePost(){
+        if (!validate()) {
+            Toast.makeText(this, "Please give valid input.", Toast.LENGTH_SHORT).show();
+            return;
+        }
         mAuth=FirebaseAuth.getInstance();
         String userId=mAuth.getCurrentUser().getUid();
         String key=mDatabaseReference.push().getKey();
@@ -294,7 +344,22 @@ public class PostActivity extends AppCompatActivity implements AdapterView.OnIte
         post.setTitle(title);
         post.setType(type);
         post.setUserId(userId);
+        String latLnag=latlangEditTxt.getText().toString();
+        String[] separated = latLnag.split(",");
+        double latitude=Double.parseDouble(separated[0].trim());
+        double longitude=Double.parseDouble(separated[1].trim());
         mDatabaseReference.child(key).setValue(post);
+        GeoFire geoFire = new GeoFire(mDatabaseReference4);
+        geoFire.setLocation(key,new GeoLocation(latitude, longitude), new GeoFire.CompletionListener() {
+            @Override
+            public void onComplete(String key, DatabaseError error) {
+                if (error != null) {
+                    System.err.println("There was an error saving the location to GeoFire: " + error);
+                } else {
+                    System.out.println("Location saved on server successfully!");
+                }
+            }
+        });
     }
 
     /**
@@ -308,6 +373,7 @@ public class PostActivity extends AppCompatActivity implements AdapterView.OnIte
         descriptionEditTxt.setText("");
         dateEditTxt.setText("");
         spinner.setSelection(0);
+        latlangEditTxt.setText("");
 
     }
 
@@ -386,5 +452,208 @@ public class PostActivity extends AppCompatActivity implements AdapterView.OnIte
 
         }
     }
+
+    /**get location from user using marker move
+     *
+     */
+    private void setLocation(){
+        AlertDialog alertDialog = new AlertDialog.Builder(this).create();
+        alertDialog.setTitle("Hotel Info");
+        //alertDialog.setIcon(R.drawable.action_hotels);
+        LayoutInflater layoutInflater = LayoutInflater.from(this);
+        View promptView = layoutInflater.inflate(R.layout.mapview_layout, null);
+        alertDialog.setView(promptView);
+
+        mMapView = promptView.findViewById(R.id.map_view);
+        MapsInitializer.initialize(this);
+
+        mMapView.onCreate(alertDialog.onSaveInstanceState());
+        mMapView.onResume();
+
+
+        mMapView.getMapAsync(new OnMapReadyCallback() {
+            @Override
+            public void onMapReady(final GoogleMap googleMap) {
+                if (ActivityCompat.checkSelfPermission(PostActivity.this, Manifest.permission.ACCESS_FINE_LOCATION)
+                        != PackageManager.PERMISSION_GRANTED
+                        && ActivityCompat.checkSelfPermission(PostActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION)
+                        != PackageManager.PERMISSION_GRANTED) {
+                    return;
+                }
+                googleMap.setMyLocationEnabled(true);
+                mMap=googleMap;
+                LatLng posisiabsen = new LatLng(latitude, longitude); ////your lat lng
+                mMarker=googleMap.addMarker(new MarkerOptions().position(posisiabsen).title("Unknown"));
+                googleMap.moveCamera(CameraUpdateFactory.newLatLng(posisiabsen));
+                googleMap.getUiSettings().setZoomControlsEnabled(true);
+                googleMap.animateCamera(CameraUpdateFactory.zoomTo(15), 2000, null);
+
+                googleMap.setOnCameraIdleListener(PostActivity.this);
+                //m_map.setOnCameraMoveStartedListener(this);
+                googleMap.setOnMarkerClickListener(PostActivity.this);
+                googleMap.setOnCameraMoveListener(PostActivity.this);
+                googleMap.setOnCameraMoveCanceledListener(PostActivity.this);
+            }
+        });
+
+        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Ok", new DialogInterface.OnClickListener()
+        {
+            public void onClick(DialogInterface dialog, int which)
+            {
+
+                Toast.makeText(getApplicationContext(), "Lat:"+mMarker.getPosition().latitude+" long:"+mMarker.getPosition().longitude,
+                        Toast.LENGTH_LONG).show();
+                        latlangEditTxt.setText(mMarker.getPosition().latitude +" , "+mMarker.getPosition().longitude);
+                        alertDialog.dismiss();
+
+            }
+
+        });
+        alertDialog.show();
+    }
+
+    @Override
+    public void onCameraIdle() {
+        try {
+            Geocoder geo = new Geocoder(PostActivity.this.getApplicationContext(), Locale.getDefault());
+            List<Address> addresses = geo.getFromLocation(mMarker.getPosition().latitude, mMarker.getPosition().longitude, 1);
+            if (addresses.isEmpty()) {
+                mMarker = mMap.addMarker(new MarkerOptions().position(mMap.getCameraPosition().target).anchor(0.5f, .05f).title("Unknown"));
+                mMarker.showInfoWindow();
+
+                //yourtextfieldname.setText("Waiting for Location");
+            }
+            else {
+                addresses.size();
+                mMarker = mMap.addMarker(new MarkerOptions().position(mMap.getCameraPosition().target).anchor(0.5f, .05f).title(addresses.get(0).getFeatureName() + ", " + addresses.get(0).getLocality() +", " + addresses.get(0).getAdminArea() + ", " + addresses.get(0).getCountryName()));
+                //Toast.makeText(getApplicationContext(), "Address:- " + addresses.get(0).getFeatureName() + addresses.get(0).getAdminArea() + addresses.get(0).getLocality(), Toast.LENGTH_LONG).show();
+                mMarker.showInfoWindow();
+            }
+        }
+        catch (Exception e) {
+            e.printStackTrace(); // getFromLocation() may sometimes fail
+        }
+
+    }
+
+    @Override
+    public void onCameraMoveCanceled() {
+
+    }
+
+    @Override
+    public void onCameraMove() {
+        //Remove previous center if it exists
+        if (mMarker != null) {
+            mMarker.remove();
+            mMarker.setVisible(false);
+        }
+        mMap.clear();
+        CameraPosition test =mMap.getCameraPosition();
+        //Assign mCenterMarker reference:
+        mMarker = mMap.addMarker(new MarkerOptions().position(mMap.getCameraPosition().target).anchor(0f, 0f));
+
+    }
+
+    @Override
+    public boolean onMarkerClick(Marker marker) {
+        return false;
+    }
+
+
+    @OnClick(R.id.input_latlang)
+    void showMap(){
+        setLocation();
+    }
+
+    /**
+     * get last known location
+     */
+
+    private void getLastKnownLocation() {
+        Log.d(TAG, "Get Last Known lcoation: called");
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                return;
+            }
+        }
+        mFusedLocationClient.getLastLocation().addOnCompleteListener(new OnCompleteListener<Location>() {
+            @Override
+            public void onComplete(@NonNull Task<Location> task) {
+                if(task.isSuccessful()){
+                    Location location=task.getResult();
+                    //GeoPoint geoPoint=new GeoPoint(location.getLatitude(),location.getLongitude());
+                    Log.d(TAG,"OnComplete: latitude: "+location.getLatitude());
+                    Log.d(TAG,"OnComplete: longitude: "+location.getLongitude());
+                    //latLng=new LatLng(location.getLatitude(),location.getLongitude());
+                    latitude=location.getLatitude();
+                    longitude=location.getLongitude();
+                }
+            }
+        });
+    }
+
+    //input field validation function
+    public boolean validate() {
+        boolean valid = true;
+
+        String title = titleEditTxt.getText().toString();
+        String avilableDate =dateEditTxt.getText().toString();
+        String rent = rentEditTxt.getText().toString();
+        String mobile = mobileEditTxt.getText().toString();
+        String address = addressEditTxt.getText().toString();
+        String location =latlangEditTxt.getText().toString();
+        String description = descriptionEditTxt.getText().toString();
+
+        if (title.isEmpty()) {
+            titleEditTxt.setError("Enter Title");
+            valid = false;
+        } else {
+            titleEditTxt.setError(null);
+        }
+
+        if (avilableDate.isEmpty()) {
+            dateEditTxt.setError("enter date");
+            valid = false;
+        } else {
+            dateEditTxt.setError(null);
+        }
+        if (rent.isEmpty() ||rent.equalsIgnoreCase("0")) {
+            rentEditTxt.setError("Enter rent");
+            valid = false;
+        } else {
+            rentEditTxt.setError(null);
+        }
+
+        if (mobile.isEmpty() || mobile.length()!=11) {
+            mobileEditTxt.setError("Enter Valid Mobile Number");
+            valid = false;
+        } else {
+            mobileEditTxt.setError(null);
+        }
+
+        if (address.isEmpty()) {
+            addressEditTxt.setError("Enter Address");
+            valid = false;
+        } else {
+            addressEditTxt.setError(null);
+        }
+
+        if (location.isEmpty() ) {
+            latlangEditTxt.setError("Password Do not match");
+            valid = false;
+        } else {
+            latlangEditTxt.setError(null);
+        }
+        if (description.isEmpty() ) {
+            descriptionEditTxt.setError("Password Do not match");
+            valid = false;
+        } else {
+            descriptionEditTxt.setError(null);
+        }
+
+        return valid;
+    }
+
 
 }

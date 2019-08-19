@@ -53,7 +53,7 @@ public class SliderAdapter extends SliderViewAdapter<SliderAdapter.SliderAdapter
                 viewHolder.textViewDescription.setTextColor(Color.WHITE);
                 Glide.with(viewHolder.itemView)
                         .load(uri)
-                        .fitCenter()
+                        .centerCrop()
                         .into(viewHolder.imageViewBackground);
                 break;
             case 1:
@@ -64,7 +64,7 @@ public class SliderAdapter extends SliderViewAdapter<SliderAdapter.SliderAdapter
                 viewHolder.textViewDescription.setTextColor(Color.WHITE);
                 Glide.with(viewHolder.itemView)
                         .load(uri)
-                        .fitCenter()
+                        .centerCrop()
                         .into(viewHolder.imageViewBackground);
                 break;
             case 2:
@@ -75,7 +75,7 @@ public class SliderAdapter extends SliderViewAdapter<SliderAdapter.SliderAdapter
                 viewHolder.textViewDescription.setTextColor(Color.WHITE);
                 Glide.with(viewHolder.itemView)
                         .load(uri)
-                        .fitCenter()
+                        .centerCrop()
                         .into(viewHolder.imageViewBackground);
                 break;
             case 3:
@@ -86,7 +86,7 @@ public class SliderAdapter extends SliderViewAdapter<SliderAdapter.SliderAdapter
                 viewHolder.textViewDescription.setTextColor(Color.WHITE);
                 Glide.with(viewHolder.itemView)
                         .load(uri)
-                        .fitCenter()
+                        .centerCrop()
                         .into(viewHolder.imageViewBackground);
                 break;
             case 4:
@@ -97,7 +97,7 @@ public class SliderAdapter extends SliderViewAdapter<SliderAdapter.SliderAdapter
                 viewHolder.textViewDescription.setTextColor(Color.WHITE);
                 Glide.with(viewHolder.itemView)
                         .load(uri)
-                        .fitCenter()
+                        .centerCrop()
                         .into(viewHolder.imageViewBackground);
                 break;
 

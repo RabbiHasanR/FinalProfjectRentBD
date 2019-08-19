@@ -32,4 +32,6 @@
         <item>Office</item>
         <item>Garage</item>
     </string-array>
+
+    <string name="google_map_api_key">AIzaSyDDPygdnA1oF_6zqwgucfVt3xX9yVeiFj8</string>
 </resources>
