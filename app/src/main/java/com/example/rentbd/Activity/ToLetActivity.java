@@ -47,6 +47,7 @@ public class ToLetActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private List<Post> posts = new ArrayList<>();
     private String type;
+    boolean nearby=false;
 //    private DatabaseReference myRef2;
 
     @BindView(R.id.my_recycler_view)
@@ -77,6 +78,10 @@ public class ToLetActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
+        if(nearby==false){
+            MenuItem nearby = menu.findItem(R.id.action_nearby);
+            nearby.setVisible(false);
+        }
         return true;
     }
 
@@ -85,6 +90,7 @@ public class ToLetActivity extends AppCompatActivity {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
+
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
@@ -137,9 +143,10 @@ public class ToLetActivity extends AppCompatActivity {
                     emptyTextView.setVisibility(View.VISIBLE);
                 }
                 else {
+                    boolean isDelate=false;
                     recyclerView.setVisibility(View.VISIBLE);
                     emptyTextView.setVisibility(View.INVISIBLE);
-                    PostAdapter recycler = new PostAdapter(posts,ToLetActivity.this);
+                    PostAdapter recycler = new PostAdapter(posts,ToLetActivity.this,isDelate);
                     RecyclerView.LayoutManager layoutmanager = new LinearLayoutManager(ToLetActivity.this);
                     recyclerView.setLayoutManager(layoutmanager);
                     recyclerView.setItemAnimator( new DefaultItemAnimator());

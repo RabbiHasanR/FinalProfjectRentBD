@@ -1,10 +1,7 @@
 package com.example.rentbd.Fragment;
 
 
-import android.graphics.Color;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -17,10 +14,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.rentbd.Activity.ToLetActivity;
 import com.example.rentbd.Adapter.PostAdapter;
-import com.example.rentbd.Adapter.SliderAdapter;
-import com.example.rentbd.Model.Photo;
 import com.example.rentbd.Model.Post;
 import com.example.rentbd.R;
 import com.google.firebase.auth.FirebaseAuth;
@@ -29,10 +23,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.smarteist.autoimageslider.IndicatorAnimations;
-import com.smarteist.autoimageslider.IndicatorView.draw.controller.DrawController;
-import com.smarteist.autoimageslider.SliderAnimations;
-import com.smarteist.autoimageslider.SliderView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -100,9 +90,10 @@ public class UserPostFragment extends Fragment {
                     emptyTextView.setVisibility(View.VISIBLE);
                 }
                 else {
+                    boolean isDelate=true;
                     recyclerView.setVisibility(View.VISIBLE);
                     emptyTextView.setVisibility(View.INVISIBLE);
-                    PostAdapter recycler = new PostAdapter(posts, getContext());
+                    PostAdapter recycler = new PostAdapter(posts, getContext(),isDelate);
                     RecyclerView.LayoutManager layoutmanager = new LinearLayoutManager(getContext());
                     recyclerView.setLayoutManager(layoutmanager);
                     recyclerView.setItemAnimator( new DefaultItemAnimator());

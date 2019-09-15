@@ -116,6 +116,8 @@ public class PostActivity extends AppCompatActivity implements AdapterView.OnIte
     private Marker mMarker;
     private GoogleMap mMap;
 
+    boolean nearby=false;
+
     //current location
     private FusedLocationProviderClient mFusedLocationClient;
     private double latitude;
@@ -163,6 +165,10 @@ public class PostActivity extends AppCompatActivity implements AdapterView.OnIte
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
+        if(nearby==false){
+            MenuItem nearby = menu.findItem(R.id.action_nearby);
+            nearby.setVisible(false);
+        }
         return true;
     }
 
@@ -458,7 +464,7 @@ public class PostActivity extends AppCompatActivity implements AdapterView.OnIte
      */
     private void setLocation(){
         AlertDialog alertDialog = new AlertDialog.Builder(this).create();
-        alertDialog.setTitle("Hotel Info");
+        alertDialog.setTitle("Select Location");
         //alertDialog.setIcon(R.drawable.action_hotels);
         LayoutInflater layoutInflater = LayoutInflater.from(this);
         View promptView = layoutInflater.inflate(R.layout.mapview_layout, null);
@@ -508,6 +514,12 @@ public class PostActivity extends AppCompatActivity implements AdapterView.OnIte
 
             }
 
+        });
+        alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "Cancle", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                alertDialog.dismiss();
+            }
         });
         alertDialog.show();
     }

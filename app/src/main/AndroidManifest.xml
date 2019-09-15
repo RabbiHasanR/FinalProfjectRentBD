@@ -16,7 +16,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".Activity.NearByActivity"></activity>
+        <activity android:name=".Activity.ShowInMapActivity"></activity>
+        <activity android:name=".Activity.NearByActivity" />
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"

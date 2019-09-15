@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -14,6 +15,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.rentbd.Activity.PostDetailsActivity;
+import com.example.rentbd.Activity.ShowInMapActivity;
 import com.example.rentbd.Activity.ToLetActivity;
 import com.example.rentbd.Model.Photo;
 import com.example.rentbd.Model.Post;
@@ -38,10 +40,12 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyHolder>{
 
     private List<Post> posts;
     private Context context;
+    boolean isDelete;
 
-    public PostAdapter(List<Post> posts,Context context) {
+    public PostAdapter(List<Post> posts,Context context,boolean isDelete) {
         this.posts=posts;
         this.context=context;
+        this.isDelete=isDelete;
     }
 
     @Override
@@ -69,6 +73,29 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyHolder>{
                 context.startActivity(intent);
             }
         });
+        holder.showBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent=new Intent(context.getApplicationContext(), ShowInMapActivity.class);
+                intent.putExtra("key",post.getKey());
+                context.startActivity(intent);
+            }
+        });
+        /*
+        delete is not working..Todo
+         */
+        if(isDelete==true){
+            holder.deleteBtn.setVisibility(View.VISIBLE);
+            holder.deleteBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    FirebaseDatabase database = FirebaseDatabase.getInstance();
+                    DatabaseReference mDatabaseReference= database.getReference().child("Posts").child(post.getKey());
+                    mDatabaseReference. removeValue();
+                }
+            });
+        }
+
     }
 
     /**
@@ -134,6 +161,10 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyHolder>{
         TextView rentTxt;
         @BindView(R.id.post_available_date)
         TextView availableDateTxt;
+        @BindView(R.id.show_map_btn)
+        Button showBtn;
+        @BindView(R.id.delete_btn)
+        Button deleteBtn;
 
 
         public MyHolder(View itemView) {

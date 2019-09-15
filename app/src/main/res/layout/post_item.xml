@@ -146,6 +146,13 @@
                     android:layout_height="wrap_content"
                     android:text="Show In Map"
                     android:theme="@style/PrimaryFlatButton" />
+                <Button
+                    android:id="@+id/delete_btn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Delete"
+                    android:theme="@style/PrimaryFlatButton"
+                    android:visibility="invisible"/>
             </LinearLayout>
         </LinearLayout>
     </androidx.cardview.widget.CardView>

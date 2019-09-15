@@ -28,9 +28,10 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 public class PostDetailsActivity extends AppCompatActivity {
-
+    boolean nearby=false;
     private String key=null;
     private FirebaseDatabase database;
     private DatabaseReference mDatabaseReference;
@@ -76,11 +77,16 @@ public class PostDetailsActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
+        if(nearby==false){
+            MenuItem nearby = menu.findItem(R.id.action_nearby);
+            nearby.setVisible(false);
+        }
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
@@ -173,5 +179,19 @@ public class PostDetailsActivity extends AppCompatActivity {
         addressTxt.setText(post.getAddress());
         phoneTxt.setText(post.getMobileNumber());
         descriptionTxt.setText(post.getDescription());
+    }
+
+
+    /**
+     * move to post activity
+     */
+    private void movePostActivity(){
+        Intent intent=new Intent(this,PostActivity.class);
+        startActivity(intent);
+    }
+
+    @OnClick(R.id.fab)
+    void onClickFab(){
+        movePostActivity();
     }
 }

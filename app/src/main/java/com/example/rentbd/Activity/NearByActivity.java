@@ -18,7 +18,11 @@ import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.example.rentbd.Adapter.CustomInfoWindow;
+import com.example.rentbd.Model.InfoWindowData;
+import com.example.rentbd.Model.Post;
 import com.example.rentbd.R;
 import com.firebase.geofire.GeoFire;
 import com.firebase.geofire.GeoLocation;
@@ -35,10 +39,12 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -52,6 +58,8 @@ public class NearByActivity extends AppCompatActivity implements OnMapReadyCallb
     private static final String TAG = "NearByActivity";
     private FusedLocationProviderClient mFusedLocationClient;
     private GoogleMap mMap;
+    private FirebaseDatabase database;
+    private FirebaseAuth mAuth;
     @BindView(R.id.input_search1)
     EditText searchEditTxt;
 
@@ -60,6 +68,8 @@ public class NearByActivity extends AppCompatActivity implements OnMapReadyCallb
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_near_by);
+        mAuth= FirebaseAuth.getInstance();
+        database = FirebaseDatabase.getInstance();
         ButterKnife.bind(this);
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         //getLastKnownLocation();
@@ -189,6 +199,7 @@ public class NearByActivity extends AppCompatActivity implements OnMapReadyCallb
      */
     private void getNearByLocation(double latitude,double longitude){
         ArrayList<GeoLocation> nearbyLocations=new ArrayList<>();
+//        ArrayList<String> keys=new ArrayList<>();
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("PostLocations");
         GeoFire geoFire = new GeoFire(ref);
         GeoQuery geoQuery = geoFire.queryAtLocation(new GeoLocation(latitude, longitude), 2.6);
@@ -198,12 +209,18 @@ public class NearByActivity extends AppCompatActivity implements OnMapReadyCallb
             public void onDataEntered(DataSnapshot dataSnapshot, GeoLocation location) {
                 //Log.d("Near by: ",location.latitude+","+location.longitude);
                 //Log.d("DataSnapshot: ",String.valueOf(dataSnapshot.);
+//                keys.add(dataSnapshot.getKey());
                 nearbyLocations.add(location);
+                /*
+                retrive all post data and show infowindow is not work properly.Todo
+                 */
+                retrivePostData(dataSnapshot.getKey());
 
             }
 
             @Override
             public void onDataExited(DataSnapshot dataSnapshot) {
+
 
             }
 
@@ -223,7 +240,9 @@ public class NearByActivity extends AppCompatActivity implements OnMapReadyCallb
                 for(GeoLocation location:nearbyLocations){
                     LatLng posisiabsen = new LatLng(location.latitude, location.longitude); ////your lat lng
                     mMarker=mMap.addMarker(new MarkerOptions().position(posisiabsen).title("Unknown"));
+
                 }
+//                System.out.print("Size:"+keys.size());
 
             }
 
@@ -232,6 +251,50 @@ public class NearByActivity extends AppCompatActivity implements OnMapReadyCallb
 
             }
         });
+    }
+
+
+    /**
+     * retrive post data from firebase datbase
+     */
+
+    private void retrivePostData(String key){
+        DatabaseReference mDatabaseReference= database.getReference().child("Posts").child(key);
+        mDatabaseReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists()){
+                    Post post = dataSnapshot.getValue(Post.class);
+//                                                Log.d("User:",user.getUsername());
+                    if(post!=null){
+                        setData(post);
+                    }
+                    else {
+                        Toast.makeText(NearByActivity.this, "User value is null", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+
+    private void setData(Post post){
+        InfoWindowData info = new InfoWindowData();
+        info.setTitle(post.getTitle());
+        info.setType(post.getType());
+        info.setRent(post.getRent());
+        info.setPhn(post.getMobileNumber());
+        info.setAddress(post.getAddress());
+        info.setAvailableDate(post.getAvailableDate());
+        CustomInfoWindow customInfoWindow = new CustomInfoWindow(this);
+        mMap.setInfoWindowAdapter(customInfoWindow);
+        mMarker.setTag(info);
+        mMarker.showInfoWindow();
     }
 
 
